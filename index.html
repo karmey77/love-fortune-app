@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>戀與深空・開運抽卡靈籤</title>
+    <style>
+        :root {
+            --bg-dark-purple: #2C1E4C;
+            --bg-light-purple: #463675;
+            --text-color: #FAF0E6;
+            --accent-color: #FF69B4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-dark-purple), var(--bg-light-purple));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .fortune-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            color: var(--text-color);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .draw-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        .draw-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.6);
+        }
+
+        .fortune-result {
+            margin-top: 20px;
+        }
+
+        .restart-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            border: 2px solid var(--text-color);
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .fortune-level {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .fortune-description {
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars-container" id="starsContainer"></div>
+    
+    <div class="fortune-card" id="fortuneCard">
+        <h1 class="title">🌙 戀與深空・開運抽卡靈籤</h1>
+        
+        <div id="drawSection">
+            <p>閉上眼睛，聽從內心的聲音，找到屬於你的靈籤！</p>
+            <button class="draw-btn" onclick="drawFortune()">開始抽籤</button>
+        </div>
+
+        <div id="resultSection" style="display: none;">
+            <div class="fortune-result">
+                <div id="fortuneLevel" class="fortune-level"></div>
+                <p id="fortuneDescription" class="fortune-description"></p>
+            </div>
+            <button class="restart-btn" onclick="resetFortune()">重新抽籤</button>
+        </div>
+    </div>
+
+    <script>
+        const fortuneSlips = [
+            {
+                level: '① 上上籤｜天降歐氣 ✨',
+                description: '今日氣場無敵，抽卡必中本命，保底不存在，快抽！'
+            },
+            {
+                level: '② 中上籤｜一發入魂 🔥',
+                description: '今日有小驚喜，試個10連有機會暴擊，抽太多反而浪費。'
+            },
+            {
+                level: '③ 中籤｜心誠則靈 🌙',
+                description: '今天需心態平和，抽前先靜心，保持平常心，運氣穩穩流。'
+            },
+            {
+                level: '④ 中下籤｜水逆中 ⚠️',
+                description: '今天氣場微弱，建議先存抽數，等待更佳時機。'
+            },
+            {
+                level: '⑤ 下籤｜非洲來電 💀',
+                description: '今天抽可能連小保都得靠近，別衝動，留石保命。'
+            },
+            {
+                level: '⑥ 上上籤｜貴人加持 🌟',
+                description: '若今天有朋友送你飲料、甜點，或說了好話，當下立刻去抽！'
+            },
+            {
+                level: '⑦ 中上籤｜小福降臨 🍀',
+                description: '今日10-30抽內有機會出五星，過這數字再抽，運勢會減弱。'
+            },
+            {
+                level: '⑧ 中籤｜抽卡有緣 🔮',
+                description: '若你今天遇到任何與「星空」、「戀愛」有關的符號或歌曲，當下就是最佳抽卡時機。'
+            },
+            {
+                level: '⑨ 下下籤｜煞氣重 ☠️',
+                description: '今天情緒不穩、容易暴躁，建議不要抽，省石留命。'
+            },
+            {
+                level: '⑩ 特籤｜命運狂潮 💫',
+                description: '今日氣場混沌，若你今天心裡一個聲音不停叫你去抽——跟著感覺走，必中歐皇時刻。'
+            }
+        ];
+
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.width = `${Math.random() * 3}px`;
+                star.style.height = star.style.width;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                container.appendChild(star);
+            }
+        }
+
+        function drawFortune() {
+            const randomIndex = Math.floor(Math.random() * fortuneSlips.length);
+            const selectedSlip = fortuneSlips[randomIndex];
+
+            document.getElementById('drawSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+
+            document.getElementById('fortuneLevel').textContent = selectedSlip.level;
+            document.getElementById('fortuneDescription').textContent = selectedSlip.description;
+        }
+
+        function resetFortune() {
+            document.getElementById('drawSection').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+        }
+
+        // 初始化星星效果
+        createStars();
+    </script>
+</body>
+</html>
