@@ -4,27 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>戀與深空・開運抽卡靈籤</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark-purple: #2C1E4C;
-            --bg-light-purple: #463675;
-            --text-color: #FAF0E6;
-            --accent-color: #FF69B4;
+            --bg-dark-purple: #1A0B33;
+            --bg-light-purple: #2E1657;
+            --accent-color-pink: #FF6B9E;
+            --accent-color-blue: #7B68EE;
+            --text-primary: #FAF0E6;
+            --text-secondary: #D1C4E9;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
         }
 
         body {
+            font-family: 'Noto Sans TC', sans-serif;
             background: linear-gradient(135deg, var(--bg-dark-purple), var(--bg-light-purple));
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            perspective: 1000px;
             overflow: hidden;
         }
 
@@ -35,12 +39,14 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: 1;
         }
 
         .star {
             position: absolute;
             background-color: rgba(255, 255, 255, 0.8);
             border-radius: 50%;
+            box-shadow: 0 0 5px 1px rgba(255, 255, 255, 0.5);
             animation: twinkle 2s infinite alternate;
         }
 
@@ -49,91 +55,131 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        .fortune-card {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
+        .fortune-container {
+            position: relative;
+            z-index: 10;
             width: 90%;
             max-width: 400px;
+        }
+
+        .fortune-card {
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.15), 
+                rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 35px 25px;
             text-align: center;
-            color: var(--text-color);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            color: var(--text-primary);
+            box-shadow: 
+                0 15px 30px rgba(0, 0, 0, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.05);
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
         }
 
         .title {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
+            font-weight: 700;
             margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            background: linear-gradient(45deg, var(--accent-color-pink), var(--accent-color-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
         }
 
-        .draw-btn {
-            background: var(--accent-color);
+        .draw-section, .result-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .draw-btn, .restart-btn {
+            background: linear-gradient(45deg, var(--accent-color-pink), var(--accent-color-blue));
             color: white;
             border: none;
             padding: 12px 24px;
             border-radius: 50px;
             font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
-        .draw-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.6);
+        .draw-btn:hover, .restart-btn:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 12px 25px rgba(255, 105, 180, 0.5);
         }
 
-        .fortune-result {
-            margin-top: 20px;
+        .draw-btn::before, .restart-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.5s ease;
         }
 
-        .restart-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--text-color);
-            border: 2px solid var(--text-color);
-            padding: 10px 20px;
-            border-radius: 50px;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .restart-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
+        .draw-btn:hover::before, .restart-btn:hover::before {
+            left: 100%;
         }
 
         .fortune-level {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, var(--accent-color-pink), var(--accent-color-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .fortune-description {
-            margin-top: 10px;
             line-height: 1.6;
+            color: var(--text-secondary);
+            padding: 0 10px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 480px) {
+            .fortune-card {
+                padding: 25px 15px;
+            }
+            .title {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="stars-container" id="starsContainer"></div>
     
-    <div class="fortune-card" id="fortuneCard">
-        <h1 class="title">🌙 戀與深空・開運抽卡靈籤</h1>
-        
-        <div id="drawSection">
-            <p>閉上眼睛，聽從內心的聲音，找到屬於你的靈籤！</p>
-            <button class="draw-btn" onclick="drawFortune()">開始抽籤</button>
-        </div>
-
-        <div id="resultSection" style="display: none;">
-            <div class="fortune-result">
-                <div id="fortuneLevel" class="fortune-level"></div>
-                <p id="fortuneDescription" class="fortune-description"></p>
+    <div class="fortune-container">
+        <div class="fortune-card" id="fortuneCard">
+            <h1 class="title">🌙 戀與深空・開運抽卡</h1>
+            
+            <div id="drawSection" class="draw-section">
+                <p class="subtitle">閉上眼睛，聽從內心的聲音</p>
+                <button class="draw-btn" onclick="drawFortune()">開始抽籤</button>
             </div>
-            <button class="restart-btn" onclick="resetFortune()">重新抽籤</button>
+
+            <div id="resultSection" class="result-section" style="display: none;">
+                <div class="fortune-result">
+                    <div id="fortuneLevel" class="fortune-level"></div>
+                    <p id="fortuneDescription" class="fortune-description"></p>
+                </div>
+                <button class="restart-btn" onclick="resetFortune()">重新抽籤</button>
+            </div>
         </div>
     </div>
 
@@ -183,7 +229,7 @@
 
         function createStars() {
             const container = document.getElementById('starsContainer');
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 150; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
                 star.style.width = `${Math.random() * 3}px`;
@@ -200,14 +246,14 @@
             const selectedSlip = fortuneSlips[randomIndex];
 
             document.getElementById('drawSection').style.display = 'none';
-            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'flex';
 
             document.getElementById('fortuneLevel').textContent = selectedSlip.level;
             document.getElementById('fortuneDescription').textContent = selectedSlip.description;
         }
 
         function resetFortune() {
-            document.getElementById('drawSection').style.display = 'block';
+            document.getElementById('drawSection').style.display = 'flex';
             document.getElementById('resultSection').style.display = 'none';
         }
 
